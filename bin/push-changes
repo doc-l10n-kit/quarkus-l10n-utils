@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script pushes changes to git remote repository.
+# This is designed to be used in CI workflow only. DO NOT call manually.
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+export GIT_USER_NAME=`jq ".git.user.name" config/l10n-utils.json -r`
+export GIT_USER_EMAIL=`jq ".git.user.email" config/l10n-utils.json -r`
+
+
+git add upstream
+git add l10n
+
+set +e
+git diff --cached --exit-code --quiet
+
+if [[ $? -eq 1 ]] ; then
+  set -e
+  git -c user.name="$GIT_USER_NAME" -c user.email="$GIT_USER_EMAIL" commit -m "$1"
+  git fetch origin main
+  git -c user.name="$GIT_USER_NAME" -c user.email="$GIT_USER_EMAIL" rebase origin/main
+  git push origin main
+fi
+set -e

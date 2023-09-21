@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script creates a glossary from `l10n/glossary/glossary.csv`
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+export TARGET_LANG=`jq ".targetLang" config/l10n-utils.json -r`
+export DEEPL_TARGET_LANG_CODE=`jq ".deepl.targetLangCode" config/l10n-utils.json -r`
+
+TIMESTAMP=`date "+%Y%m%d%H%M%S"`
+java -Dquarkus.banner.enabled=false -Dquarkus.log.category.\"io.quarkus\".level=ERROR -jar vendor/doc-l10n-kit-runner.jar glossary create \
+  --name "$TARGET_LANG-glossary-$TIMESTAMP" \
+  --source=en \
+  --target=$DEEPL_TARGET_LANG_CODE $L10N_HOME/l10n/glossary/glossary.csv 2>/dev/null

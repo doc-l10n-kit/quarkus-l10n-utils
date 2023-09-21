@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script copies override files to translate files that cannot be parsed with po4a
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+export TARGET_LANG=`jq ".targetLang" config/l10n-utils.json -r`
+
+for ITEM in `\find l10n/override` ; do
+
+    if [ -f $ITEM ] ; then
+        RELATIVE_FILE_PATH=`echo $ITEM | sed -e "s|^l10n\/override\/$TARGET_LANG\/||"`
+        RELATIVE_FILE_DIR=$(dirname $RELATIVE_FILE_PATH);
+
+        mkdir -p "build/jekyll-source/$RELATIVE_FILE_DIR"
+        cp -p "l10n/override/$TARGET_LANG/$RELATIVE_FILE_PATH" "build/jekyll-source/$RELATIVE_FILE_PATH"
+    fi
+done

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script builds the localized site
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+vendor/quarkus-l10n-utils/bin/clean
+
+vendor/quarkus-l10n-utils/bin/copy-original-files
+
+vendor/quarkus-l10n-utils/bin/apply-override-files
+
+vendor/quarkus-l10n-utils/bin/apply-po-files
+
+vendor/quarkus-l10n-utils/bin/exec-jekyll-build

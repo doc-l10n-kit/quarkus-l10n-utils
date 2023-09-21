@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script copies upstream files to `build/jekyll-source` directory
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+vendor/quarkus-l10n-utils/bin/clean
+
+mkdir -p ./build/jekyll-source
+cp -RT ./upstream ./build/jekyll-source

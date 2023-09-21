@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script applies tmx(Translation memory) to .po files under l10n/po/$TARGET_LANG
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+export TARGET_LANG=`jq ".targetLang" config/l10n-utils.json -r`
+export SIMILARITY=`jq ".tmx.similarity" config/l10n-utils.json -r`
+export TMX_FILE_PATH=`jq ".tmx.filePath" config/l10n-utils.json -r`
+
+java -jar vendor/doc-l10n-kit-runner.jar po apply-tmx --tmx=$TMX_FILE_PATH --po=l10n/po/$TARGET_LANG/
+
+vendor/quarkus-l10n-utils/bin/normalize-po-files

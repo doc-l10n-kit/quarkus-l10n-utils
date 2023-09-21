@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script clears `docs` and `build` directory
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+rm -rf docs
+rm -rf build

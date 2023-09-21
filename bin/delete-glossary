@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -eu
+
+#
+# This script deletes a glossary
+# This should be called like `bin/delete-glossary --glossaryId="<glossaryId>"
+#
+
+SCRIPT_DIR=$(cd $(dirname $0); pwd)
+L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
+cd $L10N_HOME
+
+export TARGET_LANG=`jq ".targetLang" config/l10n-utils.json -r`
+export DEEPL_TARGET_LANG_CODE=`jq ".deepl.targetLangCode" config/l10n-utils.json -r`
+
+java -Dquarkus.banner.enabled=false -Dquarkus.log.category.\"io.quarkus\".level=ERROR -jar vendor/doc-l10n-kit-runner.jar glossary delete $@ 2>/dev/null
