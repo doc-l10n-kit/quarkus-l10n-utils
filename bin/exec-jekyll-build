@@ -10,6 +10,7 @@ L10N_HOME=$(cd $(dirname $(dirname $(dirname $SCRIPT_DIR))); pwd)
 cd $L10N_HOME
 
 export TARGET_LANG=`jq ".targetLang" config/l10n-utils.json -r`
+export SITE_LANGUAGE_CODE=`jq ".siteLanguageCode" config/l10n-utils.json -r`
 
 cd build/jekyll-source
 
@@ -19,6 +20,7 @@ if ! bundle list | grep jekyll-l10n ; then
   bundle add 'jekyll-l10n' --group jekyll_plugins --git https://github.com/doc-l10n-kit/jekyll-l10n --branch main
 fi
 bundle install
-L10N_MODE=translate L10N_PO_BASE_DIR=$L10N_HOME/l10n/po/$TARGET_LANG bundle exec jekyll build -d $L10N_HOME/docs/ --config _config.yml
+echo "language: $SITE_LANGUAGE_CODE" > language_config.yml
+L10N_MODE=translate L10N_PO_BASE_DIR=$L10N_HOME/l10n/po/$TARGET_LANG bundle exec jekyll build -d $L10N_HOME/docs/ --config _config.yml,language_config.yml
 
 rm $L10N_HOME/docs/CNAME
